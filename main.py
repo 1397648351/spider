@@ -6,13 +6,11 @@
 # @Desc   :
 # ==================================================
 
-import sys
 from dataHelper.dataHelper import DataHelper
 
 if __name__ == "__main__":
     db = DataHelper()
-    rows = db.fetchall('select t.id from bs_menu t')
-    for row in rows:
-        print(row)
+    rows = db.callproc('InitServer', (1,))
+    print(rows)
     # print(DataHelper.instance().)
     # DataHelper.instance()

@@ -147,8 +147,24 @@ class DataHelper:
         connection = pymysql.connect(**self.config)
         cur = connection.cursor()
         try:
+            result = list()
             cur.callproc(procname, args)
-            # return result
+            while True:
+                _ = cur.fetchall()
+                data = []
+                fields = cur.description
+                if cur.rowcount == 0:
+                    data = None
+                else:
+                    for row in range(cur.rowcount):
+                        data_ = {}
+                        for col, field in enumerate(fields):
+                            data_[field[0]] = _[row][col]
+                        data.append(data_)
+                result.append(data)
+                if not cur.nextset():
+                    break
+            return result
         except Exception as e:
             raise e
         finally:

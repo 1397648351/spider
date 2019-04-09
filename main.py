@@ -6,7 +6,7 @@
 # @Desc   :
 # ==================================================
 
-from dataHelper.dataHelper import DataHelper
+from common.dataHelper import DataHelper
 
 if __name__ == "__main__":
     db = DataHelper()

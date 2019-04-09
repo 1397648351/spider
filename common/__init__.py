@@ -6,4 +6,4 @@
 # @Desc   : 
 # ==================================================
 
-import sys
+__all__ = ['dataHelper', 'excel', 'xmlanalysis', 'spider']

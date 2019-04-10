@@ -23,12 +23,11 @@ class Spider:
     timeout = 30
     mutex = threading.RLock()  # 创建锁
 
-    def __init__(self, url):
+    def __init__(self):
         """
         Grab init
-        :param url: URL
         """
-        self.url = url
+        pass
 
     @classmethod
     def get_content(cls, url, headers_add=None, cookies=None):

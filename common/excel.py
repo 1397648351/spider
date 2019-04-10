@@ -6,6 +6,7 @@
 # @Desc   : 
 # ==================================================
 
+import os
 import xlrd
 import xlwt
 import threading
@@ -42,38 +43,41 @@ def repeat_excel(word, sheetname, filepath):
     return False
 
 
-def write_to_excel(contents, file):
+def write_to_excel(contents, sheetname, filepath, titles=None):
     if contents:
-        print('正在写入到文本中', contents['name'])
+        if not os.path.exists(filepath):
+            new_excel(sheetname, filepath)
+        rb = xlrd.open_workbook(filepath)
+        wb = copy(rb)
         try:
-            rb = xlrd.open_workbook(file)
-            sheet = rb.sheets()[0]
-            row = sheet.nrows
-            wb = copy(rb)
-            sheet = wb.get_sheet(0)
-            id = contents['id']
-            if not repeat_excel(id, file):
-                sheet.col(1).width = 100 * 256
-                sheet.col(2).width = 100 * 256
-                sheet.col(3).width = 15 * 256
-                sheet.col(4).width = 20 * 256
-                sheet.write(row, 0, contents['id'])
-                sheet.write(row, 1, contents['name'])
-                sheet.write(row, 2, contents['html'])
-                sheet.write(row, 3, contents['time'])
-                sheet.write(row, 4, contents['types'])
-                wb.save(file)
-                print
-                u'已成功写入到文件', file, u'第', row + 1, u'行'
-            else:
-                print
-                u'内容已存在, 跳过写入文件', file
-        except IOError:
-            new_excel(file)
-            write_to_excel(contents, file)
+            sheet_rb = rb.sheet_by_name(sheetname)
+            sheet = wb.get_sheet(sheetname)
+            row = sheet_rb.nrows
+        except ValueError:
+            sheet = wb.add_sheet(sheetname, cell_overwrite_ok=True)
+            row = 0
+        if titles:
+            if row == 0:
+                if isinstance(titles, str):
+                    titles = titles.split(',')
+                if isinstance(titles, list):
+                    for col, title in enumerate(titles):
+                        if isinstance(title, str):
+                            text = title
+                        elif isinstance(title, dict):
+                            text = title['text']
+                        else:
+                            raise Exception("[titles]参数类型错误！")
+                        sheet.write(row, col, text)
+                    row = row + 1
+        for data in contents:
+            for col, key in enumerate(data):
+                sheet.write(row, col, data[key])
+            row = row + 1
+        wb.save(filepath)
 
 
-def write_info(info):
+def write_info(contents, sheetname, filepath, titles=None):
     mutex.acquire()
-    write_to_excel(info)
+    write_to_excel(contents, sheetname, filepath, titles)
     mutex.release()

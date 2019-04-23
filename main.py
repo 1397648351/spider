@@ -24,4 +24,4 @@ def export_excel():
 
 if __name__ == "__main__":
     weather = Weather()
-    weather.get_html()
+    weather.run()
